@@ -6,20 +6,19 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Data // Genera los getters y setters
-@AllArgsConstructor // genera constructor con todos los param
-@NoArgsConstructor  // genera constructor sin param
-@Builder // para construir objetos de esta clase
-@Entity // para convertirlo en un entity de JPA
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
 @Table(name = "users")
 public class UserEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) // para generar automatiamente el id
     private Long id;
