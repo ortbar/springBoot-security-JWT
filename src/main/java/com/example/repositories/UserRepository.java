@@ -15,9 +15,6 @@ public interface UserRepository extends CrudRepository<UserEntity, Long> {
     Optional<UserEntity> findByUsername(String username);
 
 
-    // DOS FORMAS DE HACERLO. USANDO LA FIRMA DEL METODO O DANDOLE UN NOMBRE ESPECIFICO AL METODO
-
-//    Optional<UserEntity> findByUserName(String username);
 
     // si queremos darle otro nombre personalizado...usando @Query
     @Query("select u from UserEntity u where u.username = ?1")
