@@ -2,7 +2,9 @@ package com.example.security;
 
 
 import com.example.security.filters.JwtAuthenticationFilter;
+import com.example.security.filters.JwtAuthorizationFilter;
 import com.example.security.jwt.JwtUtils;
+import com.example.service.UserDeatilsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +19,7 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // va a ser una clase de configuracion de spring
 @Configuration
@@ -28,11 +31,16 @@ public class SecurityConfig {
 
     // inyectamos la implementacion de userDetailService y lo pasamos como parametro en el AutenticationManager
     @Autowired
-    UserDetailsService userDetailsService;
+    UserDeatilsServiceImpl userDeatilsService;
+
+    // inyecatamos aqui el fitro de autorizacion
+    @Autowired
+    JwtAuthorizationFilter jwtAuthorizationFilter;
+
 
     //metodo que configuridad la cadena de filtros, la seguridad de la aplicacion
 
-    // comportamiento de acceso a los endpoints y el manejo de la sesion con una autenticacion basica (hpptBasic). y la autenticacion basica, la cual la hacemos  con un usaurio en memoria, que estamos creadno
+    // comportamiento de acceso a los endpoints y el manejo de la sesion
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,AuthenticationManager authenticationManager) throws Exception {
 
@@ -52,7 +60,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> {
                     session.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
                 })
-                .addFilter(jwtAuthenticationFilter)
+                .addFilter(jwtAuthenticationFilter) // primer filtro que se ejecuta
+                .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class) // se ejectua antes que el UsernamePassword.., primero que toddo se valida el token
                 .build();
     }
 
@@ -79,7 +88,7 @@ public class SecurityConfig {
     @Bean
     AuthenticationManager authenticationManager(HttpSecurity httpSecurity, PasswordEncoder passwordEncoder) throws Exception {
         return httpSecurity.getSharedObject(AuthenticationManagerBuilder.class)
-                .userDetailsService(userDetailsService)
+                .userDetailsService(userDeatilsService)
                 .passwordEncoder(passwordEncoder)
                 .and()
                 .build();
